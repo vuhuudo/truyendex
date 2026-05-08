@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { PropsWithChildren } from "react";
 import { ToastContainer } from "react-toastify";
@@ -52,6 +53,7 @@ export const LayoutWrapper = async ({
         </SettingsProvider>
         <ToastContainer theme="dark" />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
