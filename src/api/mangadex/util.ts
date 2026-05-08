@@ -168,9 +168,7 @@ export const createHttpsRequestPromise = async function <T>(
   const normalizedCorsV2 = CORS_V2?.trim();
   const normalizedCors = CORS?.trim();
   const requestTargets = [
-    ...(normalizedCorsV2
-      ? [`${normalizedCorsV2}/mangadex${path}`]
-      : []),
+    ...(normalizedCorsV2 ? [`${normalizedCorsV2}/mangadex${path}`] : []),
     ...(normalizedCors ? [`${normalizedCors}/v1/cors/${encodedUrl}`] : []),
     `${MANGADEX_API_URL}${path}`,
   ];
@@ -185,7 +183,11 @@ export const createHttpsRequestPromise = async function <T>(
     }
   }
 
-  throw lastError;
+  const lastErrorMessage =
+    lastError instanceof Error ? lastError.message : String(lastError);
+  throw new Error(
+    `Không thể tải dữ liệu MangaDex từ các endpoint dự phòng: ${lastErrorMessage}`,
+  );
 };
 
 /**
