@@ -147,12 +147,6 @@ export const createHttpsRequestPromise = async function <T>(
     );
   }
 
-  if (CORS_V2) {
-    const data = await customFetch(`${CORS_V2}/mangadex${path}`);
-
-    return { data };
-  }
-
   const encodedUrl = btoa(`${MANGADEX_API_URL}${path}`)
     .replace(/\+/g, "-")
     .replace(/\//g, "_");
@@ -171,12 +165,27 @@ export const createHttpsRequestPromise = async function <T>(
     Object.assign(httpsRequestOptions, options);
   }
 
-  const data = await customFetch(
-    `${CORS}/v1/cors/${encodedUrl}`,
-    httpsRequestOptions,
-  );
+  const normalizedCorsV2 = CORS_V2?.trim();
+  const normalizedCors = CORS?.trim();
+  const requestTargets = [
+    ...(normalizedCorsV2
+      ? [`${normalizedCorsV2}/mangadex${path}`]
+      : []),
+    ...(normalizedCors ? [`${normalizedCors}/v1/cors/${encodedUrl}`] : []),
+    `${MANGADEX_API_URL}${path}`,
+  ];
 
-  return { data };
+  let lastError: unknown;
+  for (const target of requestTargets) {
+    try {
+      const data = await customFetch(target, httpsRequestOptions);
+      return { data };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError;
 };
 
 /**

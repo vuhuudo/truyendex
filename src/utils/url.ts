@@ -10,6 +10,15 @@ export class UrlUtils {
   getBackendUrl() {
     if (typeof window !== "undefined") {
       if (window.location.hostname !== "localhost") {
+        const configuredBackendUrl = Constants.BACKEND_URL?.trim() || "";
+        const isLocalConfiguredBackend =
+          configuredBackendUrl.includes("localhost") ||
+          configuredBackendUrl.includes("127.0.0.1");
+
+        if (configuredBackendUrl && !isLocalConfiguredBackend) {
+          return configuredBackendUrl;
+        }
+
         const hostname = window.location.hostname;
         const domain = hostname.substring(
           hostname.lastIndexOf(".", hostname.lastIndexOf(".") - 1) + 1,
